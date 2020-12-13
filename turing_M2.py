@@ -283,7 +283,7 @@ if __name__ == '__main__':
     # m2(W)
     # m2(W)
     # m2(W)
-    W = 'aabbcccc#' # 0*7
+    W = 'aabbccccc#' # 0*7
     m2(W)
     W = 'aa#' # 0*8
     m2(W)
