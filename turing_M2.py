@@ -1,12 +1,4 @@
 # -*- coding: utf-8 -*-
-
-W = 'aabbbcccccc#'
-
-# 转换字符串为数组方便操作(分别用1,2,3,4,9代替a,b,c,d,#,并用0代替x)
-w = [int(chr(ord(i)-48)) for i in W[:len(W)-1]]
-w += [9]
-w[0] = 7
-
 # 第一步：确认输入具有 a+ b+ c+ 的形式
 def step1(w):
 
@@ -70,15 +62,13 @@ def step1(w):
     i, t = qs()
     while t!=0 and t!=4:
         i, t = q[t](i)
-
-    if t==0:
+    if t==0: # 输入被拒绝,不再进行下面的判断
+        t = -3
         qr()
-    # else:
-    #     print(i, t)
 
     return i, t
 
-def step2(w, i):
+def step2(w, i, t):
 
     # 返回带头转移函数qback
     def qb(i):
@@ -90,13 +80,14 @@ def step2(w, i):
             i -= 1 # 指针左移
             return i, 1
 
-    t = 1
-    while t==1:
-        i, t = qb(i)
+    if t!=-3:
+        t = 1
+        while t==1:
+            i, t = qb(i)
 
-    return i
+    return i, t
 
-def step3(w, i):
+def step3(w, i, t):
 
     # 起点是带头#右边一位
     def qs(i):
@@ -187,19 +178,18 @@ def step3(w, i):
             return i, 0
 
     q = [qr, q1, q2, q3, q4, q5]
+    if t!=-3:
+        i, t = qs(i)
+        while t!=-2 and t!=-1 and t!=0:
+            i, t = q[t](i)
 
-    i, t = qs(i)
-    while t!=-2 and t!=-1 and t!=0:
-        i, t = q[t](i)
-        # print(t)
-        # print(w)
-
-    if t==0:
-        qr()
+        if t==0: # 该输入被拒绝,不再进行第四步判断
+            qr()
+            return i, -3
+        else:
+            return i, t
     else:
-        print(t, i)
-
-    print(w)
+        return i, t
 
 def step4(w, i, t):
 
@@ -263,32 +253,41 @@ def step4(w, i, t):
 
     q = [qs, q1, q2, q3, qr, qa]
 
-    if t==-2:
-        i, t = qs1(i)
-    elif t==-1:
-        i, t = qs(i)
+    if t != -3:
+        if t==-2:
+            i, t = qs1(i)
+        elif t==-1:
+            i, t = qs(i)
 
-    while t!=4 and t!=5:
-        i, t = q[t](i)
-        # print('i=', i, 't=', t)
-        # print(w)
-    
-    q[t]()
+        while t!=4 and t!=5:
+            i, t = q[t](i)
+        
+        q[t]()
+
+def m2(W):
+    # 转换字符串为数组方便操作(分别用1,2,3,4,9代替a,b,c,d,#,并用0代替x)
+    w = [int(chr(ord(i)-48)) for i in W[:len(W)-1]]
+    w += [9]
+
+    i, t = step1(w)
+    i, t = step2(w, i, t)
+    i, t = step3(w, i, t)
+    step4(w, i, t)
+
 
 
 
 #### test ####
 if __name__ == '__main__':
     # i, t = step1(w)
-    # step2(w, i)
-    step3(w, 1)
-    # print(w)
-    step4(w, 1, -1)
-    # W = 'aaaabbbcc#' # 0*7
-    # step1(W)
-    # W = 'aabc#' # 0*8
-    # step1(W)
-    # W = 'abc#' # 0*6
-    # step1(W)
-    # W = 'bbbbc#' # 0*4
-    # step1(W)
+    # m2(W)
+    # m2(W)
+    # m2(W)
+    W = 'aabbcccc#' # 0*7
+    m2(W)
+    W = 'aa#' # 0*8
+    m2(W)
+    W = 'abc#' # 0*6
+    m2(W)
+    W = 'c#' # 0*4
+    m2(W)
